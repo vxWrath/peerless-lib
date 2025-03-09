@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "peerless_lib"
+version = "0.1.0"
+description = "Provides common functionality and utilities that can be reused across different Peerless applications."
+authors = [{ name = "wrath", email = "wrath.business0@gmail.com" }]
+readme = "README.md"
+license = { text = "MIT" }
+dependencies = [
+    "asyncpg",
+    "redis[hiredis]",
+    "discord.py",
+    "pydantic",
+    "colorlog",
+]
+requires-python = ">=3.13"
+
+[tool.setuptools]
+packages = ["peerless_lib"]
+
+[project.urls]
+Homepage = "https://github.com/vxWrath/peerless-lib"
+Repository = "https://github.com/vxWrath/peerless-lib"
