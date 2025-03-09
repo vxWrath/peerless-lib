@@ -15,6 +15,7 @@ from typing import (
     Set,
     Tuple,
     Type,
+    TypedDict,
     Union,
 )
 
@@ -34,10 +35,12 @@ class Cache[B: Optional[Bot]]:
         self.redis: Redis
         self.pubsub: PubSub
 
-        self.futures: Dict[str, asyncio.Future[Any]] = {}
+        self.responses: Dict[str, List[RedisResponse]] = {}
         self.endpoints: List[RedisCommand[PydanticBaseModel]] = []
 
-    async def start(self) -> None:
+        self._task: asyncio.Task[None]
+
+    async def start(self, endpoint_directory: str='endpoints') -> None:
         self.redis = Redis(
             host = os.getenv("REDISHOST", "localhost"), 
             password = os.getenv("REDISPASSWORD"), 
@@ -50,10 +53,12 @@ class Cache[B: Optional[Bot]]:
         await self.redis.initialize()
         await self.pubsub.connect()
 
-        self.load_endpoints('endpoints')
-        asyncio.create_task(self.listen())
+        self.load_endpoints(endpoint_directory)
+        self._task = asyncio.create_task(self.listen())
     
     async def stop(self) -> None:
+        self._task.cancel()
+
         await self.pubsub.unsubscribe()
         await self.pubsub.aclose()
         await self.redis.aclose()
@@ -165,11 +170,9 @@ class Cache[B: Optional[Bot]]:
             
             message = RedisMessage.model_validate(message_data)
             
-            if 'reply' in message.channel.lower() and message.channel in self.futures:
-                fut  = self.futures.pop(message.channel)
+            if 'reply' in message.channel.lower() and message.channel in self.responses:
                 resp = RedisResponse.model_validate(message.data)
-
-                fut.set_result(resp)
+                self.responses[message.channel].append(resp)
             else:
                 asyncio.create_task(self.handle(message))
 
@@ -189,7 +192,7 @@ class Cache[B: Optional[Bot]]:
                 message = response.model_dump_json()
             )
     
-    async def send_message(self, channel: str, data: Dict[str, Any]) -> Optional[RedisResponse]:
+    async def send_message(self, channel: str, data: Dict[str, Any]) -> Optional[List[RedisResponse]]:
         request = RedisRequest(data=data)
 
         await self.pubsub.subscribe(f"reply:{request.nonce}")
@@ -198,20 +201,18 @@ class Cache[B: Optional[Bot]]:
             message = request.model_dump_json()
         )
 
-        reply = await self.wait_for_reply(request)
+        replies = await self.wait_for_replies(request)
 
-        if reply:
-            return RedisResponse.model_validate(reply) 
+        if replies:
+            return replies
 
-    async def wait_for_reply(self, request: RedisRequest):
-        future = asyncio.get_running_loop().create_future()
-        self.futures[f"reply:{request.nonce}"] = future
+    async def wait_for_replies(self, request: RedisRequest) -> List[RedisResponse]:
+        self.responses[f"reply:{request.nonce}"] = []
 
-        try:
-            return await asyncio.wait_for(future, timeout=2)
-        except asyncio.TimeoutError:
-            self.futures.pop(f"reply:{request.nonce}")
-            return
-        finally:
-            future.cancel()
-            await self.pubsub.unsubscribe(f"reply:{request.nonce}")
+        await asyncio.sleep(1)
+        responses = self.responses[f"reply:{request.nonce}"]
+
+        self.responses.pop(f"reply:{request.nonce}")
+        await self.pubsub.unsubscribe(f"reply:{request.nonce}")
+
+        return responses
