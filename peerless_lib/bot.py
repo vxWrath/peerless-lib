@@ -32,7 +32,7 @@ class Bot(commands.AutoShardedBot):
             chunk_guilds_at_startup = False,
         )
 
-        self.cache: Cache
+        self.cache: Cache[Bot]
         self.database: Database
 
     async def setup_hook(self) -> None:
@@ -44,9 +44,6 @@ class Bot(commands.AutoShardedBot):
         
         logger.info(f"Logged in - {self.user.name} ({self.application_id})")
         logger.info(f"Loaded {len([x for x in self.tree.walk_commands() if isinstance(x, Command)])} Commands")
-
-        self.tree.copy_global_to(guild=discord.Object(id=1258570200102469632))
-        await self.tree.sync(guild=discord.Object(id=1258570200102469632))
 
     async def load_extensions(self) -> None:
         self._cogs_: List[str] = []

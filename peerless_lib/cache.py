@@ -27,18 +27,17 @@ from .models import LeagueData, PlayerData, PlayerLeagueData
 if TYPE_CHECKING:
     from .bot import Bot
 
-class Cache:
-    def __init__(self) -> None:
-        self.bot: Bot
+class Cache[B: Optional[Bot]]:
+    def __init__(self, bot: B) -> None:
+        self.bot = bot
+
         self.redis: Redis
         self.pubsub: PubSub
 
         self.futures: Dict[str, asyncio.Future[Any]] = {}
         self.endpoints: List[RedisCommand[PydanticBaseModel]] = []
 
-    async def start(self, bot: Bot) -> None:
-        self.bot = bot
-
+    async def start(self) -> None:
         self.redis = Redis(
             host = os.getenv("REDISHOST", "localhost"), 
             password = os.getenv("REDISPASSWORD"), 

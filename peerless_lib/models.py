@@ -77,6 +77,7 @@ class PartialUser(PydanticBaseModel):
     username: str
     avatar: str
     global_name: str
+    guilds: Dict[int, PartialGuild]
 
     @computed_field
     def avatar_url(self) -> str:
