@@ -28,6 +28,7 @@ class RedisRequest(BaseModel):
     data: Dict[str, Any]
 
 class RedisResponse(BaseModel):
+    identifier: int
     data: Dict[str, Any]
 
 class RedisCommand[T: BaseModel]:

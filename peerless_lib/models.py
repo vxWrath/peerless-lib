@@ -1,9 +1,21 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, Mapping, Optional
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Literal,
+    Mapping,
+    Optional,
+    TypedDict,
+    Union,
+    overload,
+)
 from uuid import uuid4
 
 from discord import Permissions
+from discord.utils import MISSING
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import (
     ConfigDict,
@@ -16,10 +28,12 @@ from pydantic import (
 )
 
 from .namespace import Namespace
+from .settings import SETTINGS, Setting, SettingSupportsMinMax, SettingSupportsOptions
 
 if TYPE_CHECKING:
     from .database import Database
 
+type SettingType = Literal['alert', 'channel', 'day', 'number', 'option', 'ping', 'role', 'status', 'theme', 'timezone']
 
 class DataModel(PydanticBaseModel, Mapping):
     model_config = ConfigDict(populate_by_name=True, arbitrary_types_allowed=True)
@@ -45,8 +59,30 @@ class DataModel(PydanticBaseModel, Mapping):
 class LeagueData(DataModel):
     id: int
     teams: Namespace[str, 'Team'] = Field(default_factory=Namespace)
+    settings: Namespace[str, 'LeagueSetting[Any]'] = Field(default_factory=Namespace)
 
     _db: 'Database' = PrivateAttr(init=False)
+
+    @overload
+    def get_setting(self, name: str, /, *, type: Literal['alert', 'status']) -> LeagueSetting[bool]: ...
+
+    @overload
+    def get_setting(self, name: str, /, *, type: Literal['channel', 'day', 'number']) -> LeagueSetting[int]: ...
+
+    @overload
+    def get_setting(self, name: str, /, *, type: Literal['role']) -> LeagueSetting[List[int]]: ...
+
+    @overload
+    def get_setting(self, name: str, /, *, type: Literal['ping']) -> LeagueSetting[Union['RolePing', 'EveryoneHerePing']]: ...
+
+    def get_setting(self, name: str, /, *, type: SettingType) -> LeagueSetting[Any]:
+        val = self.settings.get(name, MISSING)
+
+        if val is not MISSING:
+            return val
+        
+        setting = SETTINGS[name]
+        return LeagueSetting(value=setting.default_value, type=setting.type) # type: ignore
 
 class Team(PydanticBaseModel):
     token: str = Field(default_factory=lambda : str(uuid4()))
@@ -54,6 +90,18 @@ class Team(PydanticBaseModel):
     role_name: str
     role_id: Optional[int] = None
     emoji_id: Optional[int] = None
+
+class LeagueSetting[V: Any](PydanticBaseModel):
+    value: V
+    type: SettingType
+
+class RolePing(TypedDict):
+    key: Literal["role"]
+    value: List[int]
+
+class EveryoneHerePing(TypedDict):
+    key: Literal["everyone", "here"]
+    value: None
 
 class PlayerData(DataModel):
     id: int

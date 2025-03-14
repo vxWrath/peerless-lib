@@ -1,0 +1,687 @@
+[
+    {
+        "name": "Customization",
+        "key": "customization",
+        "description": "Customize your league to your liking with settings like custom embeds, messages, emojis, etc.",
+        "settings": [
+            {
+                "name": "Embed Color",
+                "key": "embed_color",
+                "default_value": [],
+                "type": "theme",
+                "description": "How most embed colors look",
+                "required": true
+            }
+        ]
+    },
+    {
+        "name": "League Management",
+        "key": "management",
+        "description": "The channels & staff that help manage your league such as operators, managers, referees, and other league jobs.",
+        "settings": [
+            {
+                "name": "Admin Roles",
+                "key": "admin_roles",
+                "default_value": [],
+                "type": "role",
+                "description": "Users with any these roles will be able to use every command on the bot",
+                "required": true
+            },
+            {
+                "name": "Operation Roles",
+                "key": "operation_roles",
+                "default_value": [],
+                "type": "role",
+                "description": "Gives users permission to use every franchise management command (/appoint, /disband, etc)",
+                "required": true
+            },
+            {
+                "name": "Alerts/Notices",
+                "key": "alerts",
+                "default_value": null,
+                "type": "channel",
+                "description": "The channel where all league events (appoints, disbands, etc) are sent to",
+                "required": true
+            },
+            {
+                "name": "Setting Changes",
+                "key": "setting_changes",
+                "default_value": null,
+                "type": "channel",
+                "description": "Where all setting changes within the bot are logged",
+                "required": false
+            },
+            {
+                "name": "Referee Roles",
+                "key": "referee_roles",
+                "default_value": [],
+                "type": "role",
+                "description": "Officials who oversee the rules and regulations of a game; makes verdicts on /challenge requests",
+                "required": false
+            },
+            {
+                "name": "Decisions",
+                "key": "decisions_channel",
+                "default_value": null,
+                "type": "channel",
+                "description": "Where the final verdict of a /challenge request is sent",
+                "required": false
+            },
+            {
+                "name": "Challenges",
+                "key": "challenges_channel",
+                "default_value": null,
+                "type": "channel",
+                "description": "A channel where all admins/referees can view /challenge requests",
+                "required": false
+            },
+            {
+                "name": "Streamer/Broadcaster Roles",
+                "key": "streamer_roles",
+                "default_value": [],
+                "type": "role",
+                "description": "A person who records live games and possibly commentates",
+                "required": false
+            },
+            {
+                "name": "Streams/Broadcasts",
+                "key": "streams_channel",
+                "default_value": null,
+                "type": "channel",
+                "description": "This is where all streams/broadcasts will be sent",
+                "required": false
+            },
+            {
+                "name": "Streams/Broadcasts Ping Roles",
+                "key": "streams_ping_roles",
+                "default_value": "1:0",
+                "type": "ping",
+                "description": "When a stream/broadcast is posted, it will ping the appropriate roles",
+                "required": false
+            },
+            {
+                "name": "Timezone",
+                "key": "timezone",
+                "default_value": "America/New_York",
+                "type": "timezone",
+                "description": "The timezone in which your league operates in",
+                "required": true
+            }
+        ]
+    },
+    {
+        "name": "Season",
+        "key": "season",
+        "description": "Season related options like schedules, standings, games, etc.",
+        "settings": []
+    },
+    {
+        "name": "Franchise",
+        "key": "franchise",
+        "description": "Franchise-specific settings like handling candidates, team owner management, and notifications regarding team owner events.",
+        "settings": [
+            {
+                "name": "Team Owner List",
+                "key": "team_owner_list_channel",
+                "default_value": null,
+                "type": "channel",
+                "description": "An automatically updating message that displays every team owner",
+                "required": false
+            },
+            {
+                "name": "New Owner Appointed",
+                "key": "new_owner_appointed_alert",
+                "default_value": true,
+                "type": "alert",
+                "description": "An alert that is sent when a new team owner is appointed",
+                "required": false
+            },
+            {
+                "name": "Owner Leave",
+                "key": "owner_leave_alert",
+                "default_value": true,
+                "type": "alert",
+                "description": "An alert that is sent when a team owner leaves the league",
+                "required": false
+            },
+            {
+                "name": "Ping Staff on Owner Leave",
+                "key": "ping_staff_on_owner_leave_status",
+                "default_value": false,
+                "type": "status",
+                "description": "This will ping the admin & league manager roles when a team owner leaves",
+                "required": false
+            },
+            {
+                "name": "Candidate System",
+                "key": "candidate_system",
+                "default_value": 1,
+                "type": "option",
+                "description": "This is how candidates will fill up open teams. Whether that be off, a traditional queue system, or just a ping.",
+                "required": false,
+                "options": [
+                    {
+                        "name": "Off",
+                        "description": "This turns the candidate system completely off"
+                    },
+                    {
+                        "name": "Queue",
+                        "description": "First person in queue will be given team owner"
+                    },
+                    {
+                        "name": "Ping",
+                        "description": "When a team is opened, it will ping the candidate roles"
+                    }
+                ]
+            },
+            {
+                "name": "Candidate Roles",
+                "key": "candidate_roles",
+                "default_value": null,
+                "type": "role",
+                "description": "These roles will be given to users who are in the candidate queue",
+                "required": false
+            },
+            {
+                "name": "Open Teams",
+                "key": "open_teams_channel",
+                "default_value": null,
+                "type": "channel",
+                "description": "This is where candidates will be pinged when there is an open team",
+                "required": false
+            },
+            {
+                "name": "Team Owner Blacklist",
+                "key": "team_owner_blacklist_status",
+                "default_value": true,
+                "type": "status",
+                "description": "Whether or not the team owner blacklist works",
+                "required": false
+            },
+            {
+                "name": "Blacklisted Roles",
+                "key": "blacklisted_roles",
+                "default_value": null,
+                "type": "role",
+                "description": "Users who are blacklisted from owning teams will be given these roles",
+                "required": false
+            }
+        ]
+    },
+    {
+        "name": "Roster",
+        "key": "roster",
+        "description": "Roster management that includes the roster cap, warnings about roster minimums, LFP/LFT, and roster events (player leave, player demand, etc.)",
+        "settings": [
+            {
+                "name": "Roster Cap",
+                "key": "roster_cap",
+                "default_value": 20,
+                "type": "number",
+                "description": "This number limits the amount of players each team can have",
+                "required": true,
+                "minimum": 1,
+                "maximum": 1000
+            },
+            {
+                "name": "Roster Minimum Amount",
+                "key": "roster_minimum_amount",
+                "default_value": 10,
+                "type": "number",
+                "description": "The threshold of how many players each team should have on the roster (make this number 0 to turn it off)",
+                "required": true,
+                "minimum": 0,
+                "maximum": null
+            },
+            {
+                "name": "Roster Minimum Delay",
+                "key": "roster_minimum_delay",
+                "default_value": 2,
+                "type": "day",
+                "description": "How long to wait before warning team owners that they are below the roster minimum",
+                "required": false,
+                "minimum": 1,
+                "maximum": 500
+            },
+            {
+                "name": "Roster Minimim Warnings",
+                "key": "roster_minimum_warnings",
+                "default_value": 3,
+                "type": "number",
+                "description": "How many warnings each team gets before the warnings stop or they are automically disbanded",
+                "required": false,
+                "minimum": 0,
+                "maximum": 10
+            },
+            {
+                "name": "Roster Minimum Auto-Disband",
+                "key": "roster_minimum_auto_disband_status",
+                "default_value": true,
+                "type": "status",
+                "description": "Whether or not to automically disband a team after they have been warned a certain amount of times",
+                "required": false
+            },
+            {
+                "name": "Team Disbanded",
+                "key": "team_disbanded_alert",
+                "default_value": true,
+                "type": "alert",
+                "description": "An alert that is sent when a team gets disbanded",
+                "required": false
+            },
+            {
+                "name": "Player Leave",
+                "key": "player_leave_alert",
+                "default_value": true,
+                "type": "alert",
+                "description": "An alert that is sent when a player on a team leaves the league",
+                "required": false
+            },
+            {
+                "name": "DM Team Owner on Player Leave",
+                "key": "dm_owner_on_player_leave_status",
+                "default_value": true,
+                "type": "status",
+                "description": "This setting will try to DM the player's team owner and tell them that they left the league",
+                "required": false
+            },
+            {
+                "name": "Player Demand",
+                "key": "player_demand_alert",
+                "default_value": true,
+                "type": "alert",
+                "description": "An alert that is sent when a player demands from their team",
+                "required": false
+            },
+            {
+                "name": "DM Team Owner on Player Demand",
+                "key": "dm_owner_on_player_demand_status",
+                "default_value": true,
+                "type": "status",
+                "description": "This setting will try to DM the player's team owner and tell them that they demanded a release",
+                "required": false
+            },
+            {
+                "name": "Looking for Players (LFP)",
+                "key": "lfp_channel",
+                "default_value": null,
+                "type": "channel",
+                "description": "Coaches will be able to send a message with what their team is in need of",
+                "required": false
+            },
+            {
+                "name": "Looking for Team (LFT)",
+                "key": "lft_channel",
+                "default_value": null,
+                "type": "channel",
+                "description": "Free agents will be able to send a message with what they have to offer",
+                "required": false
+            }
+        ]
+    },
+    {
+        "name": "Suspensions",
+        "key": "suspensions",
+        "description": "Suspension settings, notifications, and options for automated unsuspensions.",
+        "settings": [
+            {
+                "name": "Suspensions",
+                "key": "suspensions_channel",
+                "default_value": null,
+                "type": "channel",
+                "description": "This is the channel where all suspensions/unsuspensions will be logged",
+                "required": false
+            },
+            {
+                "name": "Suspended Roles",
+                "key": "suspended_roles",
+                "default_value": null,
+                "type": "role",
+                "description": "When a user is suspended, they will be given these roles",
+                "required": false
+            },
+            {
+                "name": "Auto-Unsuspend",
+                "key": "auto_unsuspend",
+                "default_value": 0,
+                "type": "option",
+                "description": "Whether to automatically unsuspended when time is served, ask for confirmation to unsuspended when time is served, or just be disabled",
+                "required": false,
+                "options": [
+                    {
+                        "name": "Enabled",
+                        "description": "Players automatically unsuspended when time is up"
+                    },
+                    {
+                        "name": "Confirmation",
+                        "description": "An admin will have to confirm the unsuspension"
+                    },
+                    {
+                        "name": "Disabled",
+                        "description": "Nothing will happen when a suspension is served"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Transactions",
+        "key": "transactions",
+        "description": "Team transactions, including contracts, signings, releases, trades, and promotions/demotions.",
+        "settings": [
+            {
+                "name": "Transaction Theme",
+                "key": "transactions_theme",
+                "default_value": 1,
+                "type": "theme",
+                "description": "How transaction messages are sent and how they look",
+                "required": true
+            },
+            {
+                "name": "Transaction Channel",
+                "key": "transactions_channel",
+                "default_value": null,
+                "type": "channel",
+                "description": "This is where all offers, contracts, signings, releasings, and promotions/demotions send to",
+                "required": true
+            },
+            {
+                "name": "Transaction Type",
+                "key": "transaction_type",
+                "default_value": 0,
+                "type": "option",
+                "description": "The type of transactions in this server, whether that be basic or a salary system",
+                "required": true,
+                "options": [
+                    {
+                        "name": "Basic",
+                        "description": "Regular transaction commands with no incentives"
+                    },
+                    {
+                        "name": "Salary",
+                        "description": "Teams have salary caps and players are signed with /offer"
+                    }
+                ]
+            },
+            {
+                "name": "Salary Cap",
+                "key": "salary_cap",
+                "default_value": 10000,
+                "type": "number",
+                "description": "The amount of money each team has available",
+                "required": false,
+                "minimum": 1,
+                "maximum": 999999999
+            },
+            {
+                "name": "Free Agent Roles",
+                "key": "free_agent_roles",
+                "default_value": null,
+                "type": "role",
+                "description": "These roles will be added/removed when a player is signed/released",
+                "required": true
+            },
+            {
+                "name": "Eligible Roles",
+                "key": "eligible_roles",
+                "default_value": null,
+                "type": "role",
+                "description": "These roles will be required for a player to be able to signed to a team",
+                "required": false
+            },
+            {
+                "name": "Require All Eligible Roles",
+                "key": "require_all_eligible_roles_status",
+                "default_value": true,
+                "type": "status",
+                "description": "Whether to require all eligible roles or just one",
+                "required": false
+            },
+            {
+                "name": "Force Sign Button",
+                "key": "force_sign_button_status",
+                "default_value": true,
+                "type": "status",
+                "description": "When users are signed with /sign, there is a button they can click if they were forcibly signed to a team",
+                "required": false
+            }
+        ]
+    },
+    {
+        "name": "Transaction Extras",
+        "key": "transaction_extras",
+        "description": "This category contains extra transaction settings such as each channel and status for every transaction type",
+        "settings": [
+            {
+                "name": "Allow Transactions",
+                "key": "transactions_status",
+                "default_value": true,
+                "type": "status",
+                "description": "Whether or not to allow any transaction (overrides all)",
+                "required": false
+            },
+            {
+                "name": "Contract Channel",
+                "key": "contracts_channel",
+                "default_value": null,
+                "type": "channel",
+                "description": "This is where all contracts will be sent (overrides transaction channel)",
+                "required": false
+            },
+            {
+                "name": "Allow Contracts",
+                "key": "contracts_status",
+                "default_value": true,
+                "type": "status",
+                "description": "Whether or not to allow contracts to be offered to players",
+                "required": false
+            },
+            {
+                "name": "Offers Channel",
+                "key": "offers_channel",
+                "default_value": null,
+                "type": "channel",
+                "description": "This is where all accepted offers to join a team will be sent (overrides transaction channel)",
+                "required": false
+            },
+            {
+                "name": "Allow Offers",
+                "key": "offers_status",
+                "default_value": true,
+                "type": "status",
+                "description": "Whether or not to allow offers to be sent to players",
+                "required": false
+            },
+            {
+                "name": "Signing Channel",
+                "key": "signing_channel",
+                "default_value": null,
+                "type": "channel",
+                "description": "This is where all signed player messages will be sent (overrides transaction channel)",
+                "required": false
+            },
+            {
+                "name": "Allow Signing",
+                "key": "signing_status",
+                "default_value": true,
+                "type": "status",
+                "description": "Whether or not to allow signing with /sign",
+                "required": false
+            },
+            {
+                "name": "Releasing Channel",
+                "key": "releasing_channel",
+                "default_value": null,
+                "type": "channel",
+                "description": "This is where all player release messages are sent (overrides transaction channel)",
+                "required": false
+            },
+            {
+                "name": "Allow Releasing",
+                "key": "releasing_status",
+                "default_value": true,
+                "type": "status",
+                "description": "Whether or not to allow releasing players from teams",
+                "required": false
+            },
+            {
+                "name": "Promotion Channel",
+                "key": "promotions_channel",
+                "default_value": null,
+                "type": "channel",
+                "description": "This is where all coach & player promotions will go (overrides transaction channel)",
+                "required": false
+            },
+            {
+                "name": "Allow Promotions",
+                "key": "promotions_status",
+                "default_value": true,
+                "type": "status",
+                "description": "Whether or not to allow coach & player promotions",
+                "required": false
+            },
+            {
+                "name": "Demotion Channel",
+                "key": "demotions_channel",
+                "default_value": null,
+                "type": "channel",
+                "description": "This is where all coach & player demotions will go (overrides transaction channel)",
+                "required": false
+            },
+            {
+                "name": "Allow Demotions",
+                "key": "demotions_status",
+                "default_value": true,
+                "type": "status",
+                "description": "Whether or not to allow coach & player demotions",
+                "required": false
+            },
+            {
+                "name": "Trade Channel",
+                "key": "trades_channel",
+                "default_value": null,
+                "type": "channel",
+                "description": "The channel where all completed trades will go and where the trade request threads will be created",
+                "required": false
+            },
+            {
+                "name": "Allow Trades",
+                "key": "trades_status",
+                "default_value": true,
+                "type": "status",
+                "description": "Whether or not to allow players to be traded to different teams",
+                "required": false
+            }
+        ]
+    },
+    {
+        "name": "Demands",
+        "key": "demands",
+        "description": "Configurations for demand types and other associated settings, such as amount or waiting time.",
+        "settings": [
+            {
+                "name": "Demands Channel",
+                "key": "demands_channel",
+                "default_value": null,
+                "type": "channel",
+                "description": "The channel where all demand releases will be sent",
+                "required": false
+            },
+            {
+                "name": "Demand System",
+                "key": "demand_system",
+                "default_value": 0,
+                "type": "option",
+                "description": "This is how demands work whether that be an amount, a cooldown, or a combination of both",
+                "required": true,
+                "options": [
+                    {
+                        "name": "Amount",
+                        "description": "A specific amount of demands that players can use"
+                    },
+                    {
+                        "name": "Cooldown",
+                        "description": "Players must wait before demanding again"
+                    },
+                    {
+                        "name": "Combination",
+                        "description": "A specific amount and a cooldown between each demand"
+                    }
+                ]
+            },
+            {
+                "name": "Demand Amount Per Player",
+                "key": "demand_amount",
+                "default_value": 3,
+                "type": "number",
+                "description": "How many demands each player will get",
+                "required": false,
+                "minimum": 0,
+                "maximum": 10
+            },
+            {
+                "name": "Demand Cooldown",
+                "key": "demand_cooldown",
+                "default_value": 5,
+                "type": "day",
+                "description": "How long players will have to wait before they can demand again",
+                "required": false,
+                "minimum": 1,
+                "maximum": 500
+            },
+            {
+                "name": "Allow Demands",
+                "key": "demands_status",
+                "default_value": true,
+                "type": "status",
+                "description": "Whether or not to allow players to demand a relase from their team",
+                "required": true
+            }
+        ]
+    },
+    {
+        "name": "Pickups",
+        "key": "pickups",
+        "description": "Settings for pickups/qbbs.",
+        "settings": [
+            {
+                "name": "Pickups Channel",
+                "key": "pickups_channel",
+                "default_value": null,
+                "type": "channel",
+                "description": "This is where all pickup game links will be sent",
+                "required": false
+            },
+            {
+                "name": "Allow Pickups",
+                "key": "pickups_status",
+                "default_value": true,
+                "type": "status",
+                "description": "Whether or not to allow pickup games",
+                "required": false
+            },
+            {
+                "name": "Pickups Host/Captain Roles",
+                "key": "captain_roles",
+                "default_value": null,
+                "type": "role",
+                "description": "These roles will be allowed to host pickup games",
+                "required": false
+            },
+            {
+                "name": "Pickups Ping Roles",
+                "key": "pickups_ping_roles",
+                "default_value": "1:0",
+                "type": "ping",
+                "description": "When a pickup game is posted, it will ping the appropriate roles",
+                "required": false
+            }
+        ]
+    },
+    {
+        "name": "Reset",
+        "key": "reset",
+        "description": "Reset all settings or entire categories",
+        "settings": []
+    }
+]

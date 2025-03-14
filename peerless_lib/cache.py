@@ -29,8 +29,9 @@ if TYPE_CHECKING:
     from .bot import Bot
 
 class Cache[B: Optional[Bot]]:
-    def __init__(self, bot: B) -> None:
+    def __init__(self, bot: B, identifier: int) -> None:
         self.bot = bot
+        self.identifier = identifier
 
         self.redis: Redis
         self.pubsub: PubSub
@@ -185,14 +186,14 @@ class Cache[B: Optional[Bot]]:
         response_data = await command.handle(command.MODEL.model_validate(request.data))
         
         if response_data:
-            response = RedisResponse(data=response_data)
+            response = RedisResponse(identifier=self.identifier, data=response_data)
 
             await self.redis.publish(
                 channel = f"reply:{request.nonce}",
                 message = response.model_dump_json()
             )
     
-    async def send_message(self, channel: str, data: Dict[str, Any]) -> Optional[List[RedisResponse]]:
+    async def send_message(self, channel: str, data: Dict[str, Any], wait_for: float=0.5) -> Optional[List[RedisResponse]]:
         request = RedisRequest(data=data)
 
         await self.pubsub.subscribe(f"reply:{request.nonce}")
@@ -201,15 +202,15 @@ class Cache[B: Optional[Bot]]:
             message = request.model_dump_json()
         )
 
-        replies = await self.wait_for_replies(request)
+        replies = await self.wait_for_replies(request, wait_for=wait_for)
 
         if replies:
             return replies
 
-    async def wait_for_replies(self, request: RedisRequest) -> List[RedisResponse]:
+    async def wait_for_replies(self, request: RedisRequest, wait_for: float) -> List[RedisResponse]:
         self.responses[f"reply:{request.nonce}"] = []
 
-        await asyncio.sleep(1)
+        await asyncio.sleep(wait_for)
         responses = self.responses[f"reply:{request.nonce}"]
 
         self.responses.pop(f"reply:{request.nonce}")
