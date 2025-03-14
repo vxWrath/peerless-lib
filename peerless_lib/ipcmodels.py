@@ -7,8 +7,7 @@ from uuid import uuid4
 from pydantic import BaseModel, Field, field_validator
 
 if TYPE_CHECKING:
-    from .cache import Cache
-
+    from .cache import B, Cache
 
 class RedisMessage(BaseModel):
     type: str
@@ -18,10 +17,10 @@ class RedisMessage(BaseModel):
 
     @field_validator('data', mode='before')
     @classmethod
-    def wrap_data(cls, v: int | str, handler):
-        if isinstance(v, str):
-            return json.loads(v)
-        return v
+    def wrap_data(cls, data: int | str, handler: Any):
+        if isinstance(data, str):
+            return json.loads(data)
+        return data
     
 class RedisRequest(BaseModel):
     nonce: str = Field(default_factory=lambda : str(uuid4()))
@@ -35,7 +34,7 @@ class RedisCommand[T: BaseModel]:
     CHANNEL: str
     MODEL: T
 
-    def __init__(self, cache: 'Cache') -> None:
+    def __init__(self, cache: Cache[B]) -> None:
         self.cache = cache
 
     async def handle(self, context: T) -> Dict[str, Any]:

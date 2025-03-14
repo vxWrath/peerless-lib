@@ -11,13 +11,21 @@ from .models import LeagueData, PlayerData, PlayerLeagueData
 if TYPE_CHECKING:
     from .bot import Bot
 
+def dumps(obj: Any):
+    return json.dumps(obj)
+
+def loads(obj: Any):
+    if obj == '"{}"':
+        return dict()
+    return json.loads(obj)
+
 async def postgres_initializer(con):
     await con.set_type_codec(
         'jsonb',
+        encoder=dumps,
+        decoder=loads,
         schema='pg_catalog',
-        encoder=json.dumps,
-        decoder=json.loads,
-        format='text',
+        format='text'
     )
 
 class Database:
@@ -131,8 +139,8 @@ class Database:
 
             if not data:
                 return
-
-            league_data = LeagueData.model_validate(dict(data), strict=True)
+            
+            league_data = LeagueData.model_validate(dict(data))
             await self.cache.hash_set(league_data, identifier=str(league_id), keys=missing)
 
         league_data._db = self
@@ -153,14 +161,14 @@ class Database:
                     if not data:
                         return None
                     
-                    player_data = PlayerData.model_validate(dict(data) | {"leagues": {}}, strict=True)
+                    player_data = PlayerData.model_validate(dict(data) | {"leagues": {}})
                     await self.cache.hash_set(player_data, identifier=str(player_id), keys={'id', 'blacklisted'})
 
                 if not player_league_data:
                     data = await con.fetchrow(f"SELECT {', '.join(necessary_keys)} FROM player_leagues WHERE player_id=$1 AND league_id=$2", player_id, league_id)
                 
                     if data:
-                        player_league_data = PlayerLeagueData.model_validate(dict(data), strict=True)
+                        player_league_data = PlayerLeagueData.model_validate(dict(data))
                         await self.cache.hash_set(player_league_data, identifier=f"{player_id}:{league_id}", keys=necessary_keys)
                 
                 elif player_league_data and missing:

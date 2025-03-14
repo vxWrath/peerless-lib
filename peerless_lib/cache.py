@@ -9,13 +9,14 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Dict,
+    Generic,
     Iterable,
     List,
     Optional,
     Set,
     Tuple,
     Type,
-    TypedDict,
+    TypeVar,
     Union,
 )
 
@@ -28,7 +29,9 @@ from .models import LeagueData, PlayerData, PlayerLeagueData
 if TYPE_CHECKING:
     from .bot import Bot
 
-class Cache[B: Optional[Bot]]:
+B = TypeVar('B', None, Bot)
+
+class Cache(Generic[B]):
     def __init__(self, bot: B, identifier: int) -> None:
         self.bot = bot
         self.identifier = identifier

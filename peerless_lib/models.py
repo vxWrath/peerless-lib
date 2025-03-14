@@ -8,8 +8,11 @@ from typing import (
     Literal,
     Mapping,
     Optional,
+    Self,
+    Type,
     TypedDict,
     Union,
+    get_origin,
     overload,
 )
 from uuid import uuid4
@@ -20,6 +23,7 @@ from pydantic import BaseModel as PydanticBaseModel
 from pydantic import (
     ConfigDict,
     Field,
+    ModelWrapValidatorHandler,
     PrivateAttr,
     computed_field,
     field_serializer,
@@ -37,6 +41,15 @@ type SettingType = Literal['alert', 'channel', 'day', 'number', 'option', 'ping'
 
 class DataModel(PydanticBaseModel, Mapping):
     model_config = ConfigDict(populate_by_name=True, arbitrary_types_allowed=True)
+
+    @model_validator(mode='wrap')
+    @classmethod
+    def model_validator(cls: Type[Self], data: Any, handler: ModelWrapValidatorHandler) -> Self:
+        for key, field in cls.model_fields.items():
+            if field.annotation and isinstance(data[key], dict) and Namespace in field.annotation.mro():
+                data[key] = Namespace(data[key])
+
+        return handler(data)
 
     def __getattribute__(self, key: str) -> Any:
         if (
