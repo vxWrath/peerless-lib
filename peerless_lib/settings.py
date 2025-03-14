@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 from .namespace import Namespace
 
-with importlib.resources.open_text("peerless_lib", "data.json") as f:
+with importlib.resources.open_text("peerless_lib", "settings.json") as f:
     data = json.load(f)
 
 class Section(BaseModel):
