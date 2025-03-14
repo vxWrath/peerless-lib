@@ -1,3 +1,4 @@
+import importlib.resources
 import json
 from typing import Any, List, Optional, Union
 
@@ -5,7 +6,7 @@ from pydantic import BaseModel
 
 from .namespace import Namespace
 
-with open(f'peerless_lib/settings.json', 'rb') as f:
+with importlib.resources.open_text("peerless_lib", "data.json") as f:
     data = json.load(f)
 
 class Section(BaseModel):

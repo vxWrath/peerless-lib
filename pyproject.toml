@@ -21,6 +21,9 @@ requires-python = ">=3.13"
 [tool.setuptools]
 packages = ["peerless_lib"]
 
+[tool.setuptools.package-data]
+"peerless_lib" = ["*.json"]
+
 [project.urls]
 Homepage = "https://github.com/vxWrath/peerless-lib"
 Repository = "https://github.com/vxWrath/peerless-lib"

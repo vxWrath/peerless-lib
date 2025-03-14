@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 setup(
     name="peerless_lib",
@@ -8,6 +8,7 @@ setup(
     author_email="wrath.business0@gmail.com",
     url="https://github.com/vxWrath/peerless-lib",
     packages=find_packages(),
+    include_package_data=True,
     install_requires=[
         "asyncpg",
         "redis[hiredis]",
