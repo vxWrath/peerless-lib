@@ -44,10 +44,13 @@ class DataModel(PydanticBaseModel, Mapping):
 
     @model_validator(mode='wrap')
     @classmethod
-    def model_validator(cls: Type[Self], data: Any, handler: ModelWrapValidatorHandler) -> Self:
+    def model_validator(cls: Type[Self], data: Dict[str, Any], handler: ModelWrapValidatorHandler) -> Self:
         for key, field in cls.model_fields.items():
-            if field.annotation and isinstance(data[key], dict) and Namespace in field.annotation.mro():
-                data[key] = Namespace(data[key])
+            if (val := data.get(key, MISSING)) is MISSING:
+                continue
+
+            if field.annotation and isinstance(val, dict) and Namespace in field.annotation.mro():
+                data[key] = Namespace(val)
 
         return handler(data)
 
@@ -56,7 +59,7 @@ class DataModel(PydanticBaseModel, Mapping):
             key in super().__getattribute__('__pydantic_fields__').keys()
             and key not in super().__getattribute__('__pydantic_fields_set__')
         ):
-            raise ValueError(f"'{self.__class__.__name__}.{key}' is not currently available")
+            raise ValueError(f"'{self.__class__.__name__}.{key}' is not currently available. Make sure you fetched it.")
         
         return super().__getattribute__(key)
     
