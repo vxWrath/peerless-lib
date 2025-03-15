@@ -11,10 +11,10 @@ from .models import LeagueData, PlayerData, PlayerLeagueData
 if TYPE_CHECKING:
     from .bot import Bot
 
-def dumps(obj: Any):
+def _dumps(obj: Any):
     return json.dumps(obj)
 
-def loads(obj: Any):
+def _loads(obj: Any):
     if obj == '"{}"':
         return dict()
     return json.loads(obj)
@@ -22,8 +22,8 @@ def loads(obj: Any):
 async def postgres_initializer(con):
     await con.set_type_codec(
         'jsonb',
-        encoder=dumps,
-        decoder=loads,
+        encoder=_dumps,
+        decoder=_loads,
         schema='pg_catalog',
         format='text'
     )

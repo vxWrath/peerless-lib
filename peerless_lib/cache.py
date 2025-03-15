@@ -30,7 +30,6 @@ if TYPE_CHECKING:
     from .bot import Bot
 
 B = TypeVar('B', None, 'Bot')
-print(B)
 
 class Cache(Generic[B]):
     def __init__(self, bot: B, identifier: int) -> None:
