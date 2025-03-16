@@ -86,8 +86,9 @@ class Database:
                 DELETE FROM {table} WHERE id=$1
             """, model.id)
 
-    async def create_league(self, league_id: int) -> LeagueData:
+    async def create_league(self, league_id: int, *, keys: Set[str]) -> LeagueData:
         league_data = LeagueData(id=league_id)
+        league_data.__pydantic_fields_set__.update(keys)
         league_data._db = self
 
         await self.insert(
@@ -95,11 +96,11 @@ class Database:
             model = league_data,
             excluded = set()
         )
-
         return league_data
 
     async def create_player(self, player_id: int) -> PlayerData:
         player_data = PlayerData(id=player_id)
+        player_data.__pydantic_fields_set__.update({"blacklisted", "leagues"})
         player_data._db = self
 
         await self.insert(
@@ -200,7 +201,7 @@ class Database:
         league_data = await self.fetch_league(league_id, keys=keys)
 
         if not league_data:
-            league_data = await self.create_league(league_id)
+            league_data = await self.create_league(league_id, keys=keys)
 
         return league_data
     
