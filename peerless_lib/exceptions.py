@@ -11,6 +11,9 @@ class PeerlessException(Exception):
     """Base exception for all peerless errors"""
     pass
 
+class PeerlessDown(Exception):
+    pass
+
 class CheckFailure(discord.app_commands.CheckFailure):
     def __init__(self, check: str):
         self.check = check
