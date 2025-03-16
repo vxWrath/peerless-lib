@@ -182,21 +182,21 @@ class Cache(Generic[B]):
 
     async def handle(self, message: RedisMessage) -> None:
         command = next((x for x in self.endpoints if x.CHANNEL == message.channel), None)
-        if not command:
-            return
-        
-        request = RedisRequest.model_validate(message.data)
-        response_data = await command.handle(command.MODEL.model_validate(request.data))
-        
-        if response_data:
-            response = RedisResponse(identifier=self.identifier, data=response_data)
 
-            await self.redis.publish(
-                channel = f"reply:{request.nonce}",
-                message = response.model_dump_json()
-            )
+        if command:
+            request = RedisRequest.model_validate(message.data)
+            response_data = await command.handle(command.MODEL.model_validate(request.data))
+        
+            response = RedisResponse(identifier=self.identifier, data=response_data)
+        else:
+            response = RedisResponse(identifier=self.identifier, data=None)
+
+        await self.redis.publish(
+            channel = f"reply:{request.nonce}",
+            message = response.model_dump_json()
+        )
     
-    async def send_message(self, channel: str, data: Dict[str, Any], wait_for: float=0.5) -> Optional[List[RedisResponse]]:
+    async def send_message(self, channel: str, data: Dict[str, Any], wait_for: float=0.5) -> List[RedisResponse]:
         request = RedisRequest(data=data)
 
         await self.pubsub.subscribe(f"reply:{request.nonce}")
@@ -205,10 +205,7 @@ class Cache(Generic[B]):
             message = request.model_dump_json()
         )
 
-        replies = await self.wait_for_replies(request, wait_for=wait_for)
-
-        if replies:
-            return replies
+        return await self.wait_for_replies(request, wait_for=wait_for)
 
     async def wait_for_replies(self, request: RedisRequest, wait_for: float) -> List[RedisResponse]:
         self.responses[f"reply:{request.nonce}"] = []

@@ -28,7 +28,7 @@ class RedisRequest(BaseModel):
 
 class RedisResponse(BaseModel):
     identifier: int
-    data: Dict[str, Any]
+    data: Optional[Dict[str, Any]]
 
 class RedisCommand[T: BaseModel]:
     CHANNEL: str
@@ -37,5 +37,5 @@ class RedisCommand[T: BaseModel]:
     def __init__(self, cache: Cache[B]) -> None:
         self.cache = cache
 
-    async def handle(self, context: T) -> Dict[str, Any]:
+    async def handle(self, context: T) -> Optional[Dict[str, Any]]:
         raise NotImplementedError()
