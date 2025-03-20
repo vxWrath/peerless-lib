@@ -12,6 +12,7 @@ from typing import (
     Generic,
     Iterable,
     List,
+    Literal,
     Optional,
     Set,
     Tuple,
@@ -35,11 +36,13 @@ class Cache(Generic[B]):
     def __init__(self, bot: B, identifier: int) -> None:
         self.bot = bot
         self.identifier = identifier
+        self.loop = asyncio.get_running_loop()
 
         self.redis: Redis
         self.pubsub: PubSub
 
         self.responses: Dict[str, List[RedisResponse]] = {}
+        self.futures: Dict[str, asyncio.Future[RedisResponse]] = {}
         self.endpoints: List[RedisCommand[PydanticBaseModel]] = []
 
         self._task: asyncio.Task[None]
@@ -174,9 +177,14 @@ class Cache(Generic[B]):
             
             message = RedisMessage.model_validate(message_data)
             
-            if 'reply' in message.channel.lower() and message.channel in self.responses:
+            if 'reply' in message.channel.lower():
                 resp = RedisResponse.model_validate(message.data)
-                self.responses[message.channel].append(resp)
+
+                if message.channel in self.responses:
+                    self.responses[message.channel].append(resp)
+                elif message.channel in self.futures:
+                    future = self.futures.pop(message.channel)
+                    future.set_result(resp)
             else:
                 asyncio.create_task(self.handle(message))
 
@@ -195,7 +203,7 @@ class Cache(Generic[B]):
             message = response.model_dump_json()
         )
     
-    async def send_message(self, channel: str, data: Dict[str, Any], wait_for: float=0.5) -> List[RedisResponse]:
+    async def send_message(self, channel: str, data: Dict[str, Any], wait_for: float=0.5, return_when: Literal['all', 'first']='all') -> List[RedisResponse]:
         request = RedisRequest(data=data)
 
         await self.pubsub.subscribe(f"reply:{request.nonce}")
@@ -204,6 +212,8 @@ class Cache(Generic[B]):
             message = request.model_dump_json()
         )
 
+        if return_when == 'first':
+            return [await self.wait_for_reply(request, timeout=wait_for)]
         return await self.wait_for_replies(request, wait_for=wait_for)
 
     async def wait_for_replies(self, request: RedisRequest, wait_for: float) -> List[RedisResponse]:
@@ -216,3 +226,16 @@ class Cache(Generic[B]):
         await self.pubsub.unsubscribe(f"reply:{request.nonce}")
 
         return responses
+    
+    async def wait_for_reply(self, request: RedisRequest, timeout: float) -> RedisResponse:
+        future: asyncio.Future[RedisResponse] = self.loop.create_future()
+        self.futures[f"reply:{request.nonce}"] = future
+
+        try:
+            return await asyncio.wait_for(future, timeout=timeout)
+        except asyncio.TimeoutError:
+            self.futures.pop(f"reply:{request.nonce}")
+            return RedisResponse(identifier=-1, data=None)
+        finally:
+            future.cancel()
+            await self.pubsub.unsubscribe(f"reply:{request.nonce}")
