@@ -182,11 +182,10 @@ class Cache(Generic[B]):
 
     async def handle(self, message: RedisMessage) -> None:
         command = next((x for x in self.endpoints if x.CHANNEL == message.channel), None)
+        request = RedisRequest.model_validate(message.data)
 
         if command:
-            request = RedisRequest.model_validate(message.data)
             response_data = await command.handle(command.MODEL.model_validate(request.data))
-        
             response = RedisResponse(identifier=self.identifier, data=response_data)
         else:
             response = RedisResponse(identifier=self.identifier, data=None)
