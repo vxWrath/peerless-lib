@@ -1,5 +1,8 @@
 from typing import Any, Mapping, overload
 
+__all__ = (
+    'Namespace',
+)
 
 class Namespace[K, V](dict[K, V]):
     @overload

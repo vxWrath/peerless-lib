@@ -6,6 +6,16 @@ from pydantic import BaseModel
 
 from .namespace import Namespace
 
+__all__ = (
+    'SECTIONS',
+    'SETTINGS',
+    'Section',
+    'Setting',
+    'SettingSupportsOptions',
+    'SettingSupportsMinMax',
+    'Option',
+)
+
 with importlib.resources.open_text("peerless_lib", "settings.json") as f:
     data = json.load(f)
 

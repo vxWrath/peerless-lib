@@ -30,6 +30,10 @@ from .models import LeagueData, PlayerData, PlayerLeagueData
 if TYPE_CHECKING:
     from .bot import Bot
 
+__all__ = (
+    'Cache',
+)
+
 B = TypeVar('B', None, 'Bot')
 
 class Cache(Generic[B]):
@@ -189,8 +193,12 @@ class Cache(Generic[B]):
                 asyncio.create_task(self.handle(message))
 
     async def handle(self, message: RedisMessage) -> None:
-        command = next((x for x in self.endpoints if x.CHANNEL == message.channel), None)
         request = RedisRequest.model_validate(message.data)
+
+        if request.identifier is not None and request.identifier != self.identifier:
+            return
+        
+        command = next((x for x in self.endpoints if x.CHANNEL == message.channel), None)
 
         if command:
             response_data = await command.handle(command.MODEL.model_validate(request.data))
@@ -203,8 +211,8 @@ class Cache(Generic[B]):
             message = response.model_dump_json()
         )
     
-    async def send_message(self, channel: str, data: Dict[str, Any], wait_for: float=0.5, return_when: Literal['all', 'first']='all') -> List[RedisResponse]:
-        request = RedisRequest(data=data)
+    async def send_message(self, channel: str, data: Dict[str, Any], wait_for: float=1.5, return_when: Literal['all', 'first']='all') -> List[RedisResponse]:
+        request = RedisRequest(identifier=None, data=data)
 
         await self.pubsub.subscribe(f"reply:{request.nonce}")
         await self.redis.publish(
@@ -215,6 +223,17 @@ class Cache(Generic[B]):
         if return_when == 'first':
             return [await self.wait_for_reply(request, timeout=wait_for)]
         return await self.wait_for_replies(request, wait_for=wait_for)
+    
+    async def send_message_to(self, identifier: int, channel:str, data: Dict[str, Any], timeout: float=1.5) -> RedisResponse:
+        request = RedisRequest(identifier=identifier, data=data)
+
+        await self.pubsub.subscribe(f"reply:{request.nonce}")
+        await self.redis.publish(
+            channel = channel,
+            message = request.model_dump_json()
+        )
+
+        return await self.wait_for_reply(request, timeout=timeout)
 
     async def wait_for_replies(self, request: RedisRequest, wait_for: float) -> List[RedisResponse]:
         self.responses[f"reply:{request.nonce}"] = []

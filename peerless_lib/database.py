@@ -11,6 +11,10 @@ from .models import LeagueData, PlayerData, PlayerLeagueData
 if TYPE_CHECKING:
     from .bot import Bot
 
+__all__ = (
+    'Database',
+)
+
 def _dumps(obj: Any):
     return json.dumps(obj)
 
@@ -113,6 +117,7 @@ class Database:
 
     async def create_player_league(self, player_data: PlayerData, league_data: LeagueData) -> PlayerLeagueData:
         player_league_data = PlayerLeagueData(player_id=player_data.id, league_id=league_data.id)
+        player_league_data.__pydantic_fields_set__.update(player_league_data.model_fields.keys())
         player_league_data._db = self
 
         await self.insert(
@@ -132,7 +137,7 @@ class Database:
         if league_data and missing:
             data = await self.pool.fetchrow(f"SELECT {', '.join(missing)} FROM leagues WHERE id=$1", league_id)
 
-            league_data.model_copy(update=dict(data))
+            league_data = league_data.model_validate(data | league_data.model_dump())
             await self.cache.hash_set(league_data, identifier=str(league_id), keys=necessary_keys)
 
         elif not league_data:
@@ -176,7 +181,7 @@ class Database:
                     data = await con.fetchrow(f"SELECT {', '.join(missing)} FROM player_leagues WHERE player_id=$1 AND league_id=$2", player_id, league_id)
 
                     if data:
-                        player_league_data = player_league_data.model_copy(update=dict(data))
+                        player_league_data = player_league_data.model_validate(data | player_league_data.model_dump())
                         await self.cache.hash_set(player_league_data, identifier=f"{player_id}:{league_id}", keys=missing)
                     else:
                         player_league_data = None

@@ -12,7 +12,6 @@ from typing import (
     Type,
     TypedDict,
     Union,
-    get_origin,
     overload,
 )
 from uuid import uuid4
@@ -32,10 +31,22 @@ from pydantic import (
 )
 
 from .namespace import Namespace
-from .settings import SETTINGS, Setting, SettingSupportsMinMax, SettingSupportsOptions
+from .settings import SETTINGS
 
 if TYPE_CHECKING:
     from .database import Database
+
+__all__ = (
+    'LeagueData',
+    'Team',
+    'LeagueSetting',
+    'RolePing',
+    'EveryoneHerePing',
+    'PlayerData',
+    'PlayerLeagueData',
+    'PartialUser',
+    'PartialGuild',
+)
 
 type SettingType = Literal['alert', 'channel', 'day', 'number', 'option', 'ping', 'role', 'status', 'theme', 'timezone']
 

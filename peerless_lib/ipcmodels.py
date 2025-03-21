@@ -9,6 +9,13 @@ from pydantic import BaseModel, Field, field_validator
 if TYPE_CHECKING:
     from .cache import B, Cache
 
+__all__ = (
+    'RedisMessage',
+    'RedisRequest',
+    'RedisResponse',
+    'RedisCommand',
+)
+
 class RedisMessage(BaseModel):
     type: str
     pattern: Optional[str]
@@ -23,6 +30,7 @@ class RedisMessage(BaseModel):
         return data
     
 class RedisRequest(BaseModel):
+    identifier: Optional[int]
     nonce: str = Field(default_factory=lambda : str(uuid4()))
     data: Dict[str, Any]
 

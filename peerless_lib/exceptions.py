@@ -7,6 +7,17 @@ import discord
 if TYPE_CHECKING:
     from .models import Team
 
+__all__ = (
+    'PeerlessException',
+    'PeerlessDown',
+    'CheckFailure',
+    'RolesNotAssignable',
+    'RolesAlreadyManaged',
+    'RolesAlreadyUsed',
+    'NotEnoughTeams',
+    'TeamWithoutRole',
+)
+
 class PeerlessException(Exception):
     """Base exception for all peerless errors"""
     pass

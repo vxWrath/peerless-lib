@@ -13,6 +13,11 @@ from .database import Database
 from .interaction import BeforeInteraction
 from .namespace import Namespace
 
+__all__ = (
+    'Bot', 
+    'AppCommandTree'
+)
+
 intents = discord.Intents.none()
 intents.guilds  = True
 intents.emojis  = True
