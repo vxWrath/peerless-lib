@@ -110,6 +110,25 @@ class LeagueData(DataModel):
         
         setting = SETTINGS[name]
         return LeagueSetting(value=setting.default_value, type=setting.type) # type: ignore
+    
+    def get_used_roles(self) -> Dict[int, str]:
+        roles: Dict[int, str] = {}
+
+        for team in self.teams.values():
+            if team.role_id:
+                roles[team.role_id] = "team"
+
+        for setting in self.settings.values():
+            if setting.type == 'role':
+                for role in setting.value:
+                    roles[role] = setting.type
+
+            elif setting.type == 'ping':
+                if setting.value['key'] == 'role':
+                    for role in setting.value['value']:
+                        roles[role] = setting.type
+
+        return roles
 
 class Team(PydanticBaseModel):
     token: str = Field(default_factory=lambda : str(uuid4()))
