@@ -68,7 +68,8 @@ class Cache(Generic[B]):
         self._task = asyncio.create_task(self.listen())
     
     async def stop(self) -> None:
-        self._task.cancel()
+        if hasattr(self, '_task') and not self._task.done():
+            self._task.cancel()
 
         await self.pubsub.unsubscribe()
         await self.pubsub.aclose()
