@@ -54,6 +54,7 @@
             {
                 "name": "Referee Roles",
                 "key": "referee_roles",
+                "icon": "fa-solid fa-flag",
                 "default_value": [],
                 "type": "role",
                 "description": "Officials who oversee the rules and regulations of a game; makes verdicts on /challenge requests",
@@ -78,6 +79,7 @@
             {
                 "name": "Streamer/Broadcaster Roles",
                 "key": "streamer_roles",
+                "icon": "fa-solid fa-headset",
                 "default_value": [],
                 "type": "role",
                 "description": "A person who records live games and possibly commentates",
@@ -86,6 +88,7 @@
             {
                 "name": "Streams/Broadcasts",
                 "key": "streams_channel",
+                "icon": "fa-solid fa-tower-broadcast",
                 "default_value": null,
                 "type": "channel",
                 "description": "This is where all streams/broadcasts will be sent",
@@ -94,7 +97,8 @@
             {
                 "name": "Streams/Broadcasts Ping Roles",
                 "key": "streams_ping_roles",
-                "default_value": "1:0",
+                "icon": "fa-solid fa-bell",
+                "default_value": {"key": "here", "value": null},
                 "type": "ping",
                 "description": "When a stream/broadcast is posted, it will ping the appropriate roles",
                 "required": false
@@ -216,6 +220,7 @@
             {
                 "name": "Roster Cap",
                 "key": "roster_cap",
+                "icon": "fa-solid fa-users",
                 "default_value": 20,
                 "type": "number",
                 "description": "This number limits the amount of players each team can have",
