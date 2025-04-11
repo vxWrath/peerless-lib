@@ -20,19 +20,11 @@
         "description": "The channels & staff that help manage your league such as operators, managers, referees, and other league jobs.",
         "settings": [
             {
-                "name": "Admin Roles",
-                "key": "admin_roles",
-                "default_value": [],
-                "type": "role",
-                "description": "Users with any these roles will be able to use every command on the bot",
-                "required": true
-            },
-            {
-                "name": "Operation Roles",
-                "key": "operation_roles",
-                "default_value": [],
-                "type": "role",
-                "description": "Gives users permission to use every franchise management command (/appoint, /disband, etc)",
+                "name": "Operations Roles",
+                "key": "operations_roles",
+                "default_value": {},
+                "type": "operations",
+                "description": "Each role has special permissions that manage various aspects of your server. These permissions are changeable per role.",
                 "required": true
             },
             {
@@ -143,11 +135,12 @@
             {
                 "name": "Owner Leave",
                 "key": "owner_leave_alert",
+                "icon": "fa-solid fa-right-from-bracket",
                 "default_value": true,
                 "type": "alert",
                 "description": "An alert that is sent when a team owner leaves the league",
                 "required": false
-            },
+              },
             {
                 "name": "Ping Staff on Owner Leave",
                 "key": "ping_staff_on_owner_leave_status",
@@ -261,11 +254,12 @@
             {
                 "name": "Roster Minimum Auto-Disband",
                 "key": "roster_minimum_auto_disband_status",
-                "default_value": true,
+                "icon": "fa-solid fa-link-slash",
+                "default_value": false,
                 "type": "status",
-                "description": "Whether or not to automically disband a team after they have been warned a certain amount of times",
+                "description": "Whether or not to automically disband a team after they have been warned a certain amount of times about being under the roster minimum",
                 "required": false
-            },
+              },
             {
                 "name": "Team Disbanded",
                 "key": "team_disbanded_alert",
@@ -595,25 +589,29 @@
             {
                 "name": "Demand System",
                 "key": "demand_system",
-                "default_value": 0,
+                "icon": "fa-solid fa-key",
+                "default_value": "amount",
                 "type": "option",
                 "description": "This is how demands work whether that be an amount, a cooldown, or a combination of both",
                 "required": true,
                 "options": [
-                    {
-                        "name": "Amount",
-                        "description": "A specific amount of demands that players can use"
-                    },
-                    {
-                        "name": "Cooldown",
-                        "description": "Players must wait before demanding again"
-                    },
-                    {
-                        "name": "Combination",
-                        "description": "A specific amount and a cooldown between each demand"
-                    }
+                  {
+                    "name": "Amount",
+                    "description": "A specific amount of demands that players can use",
+                    "icon": "fa-solid fa-calculator"
+                  },
+                  {
+                    "name": "Cooldown",
+                    "description": "Players must wait before demanding again",
+                    "icon": "fa-solid fa-hourglass"
+                  },
+                  {
+                    "name": "Combination",
+                    "description": "A specific amount and a cooldown between each demand",
+                    "icon": "fa-solid fa-recycle"
+                  }
                 ]
-            },
+              },
             {
                 "name": "Demand Amount Per Player",
                 "key": "demand_amount",
@@ -627,13 +625,14 @@
             {
                 "name": "Demand Cooldown",
                 "key": "demand_cooldown",
+                "icon": "fa-solid fa-stopwatch",
                 "default_value": 5,
                 "type": "day",
                 "description": "How long players will have to wait before they can demand again",
                 "required": false,
                 "minimum": 1,
                 "maximum": 500
-            },
+              },
             {
                 "name": "Allow Demands",
                 "key": "demands_status",
